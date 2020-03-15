@@ -1,0 +1,103 @@
+CREATE TABLE "employees" (
+    "emp_no" INT   NOT NULL,
+    "birth_date" DATE   NOT NULL,
+    "first_name" VARCHAR   NOT NULL,
+    "last_name" VARCHAR   NOT NULL,
+    "gender" VARCHAR   NOT NULL,
+    "hire_date" DATE   NOT NULL,
+    CONSTRAINT "pk_employees" PRIMARY KEY (
+        "emp_no"
+     )
+);
+
+CREATE TABLE "departments" (
+    "dept_no" varchar   NOT NULL,
+    "dept_name" varchar   NOT NULL,
+    CONSTRAINT "pk_departments" PRIMARY KEY (
+        "dept_no"
+     )
+);
+
+CREATE TABLE "dept_manager" (
+    "dept_no" varchar   NOT NULL,
+    "emp_no" int   NOT NULL,
+    "from_date" date   NOT NULL,
+    "to_date" date   NOT NULL
+);
+
+CREATE TABLE "salaries" (
+    "emp_no" int   NOT NULL,
+    "salary" INT   NOT NULL,
+    "from_date" DATE   NOT NULL,
+    "to_date" date   NOT NULL
+);
+
+CREATE TABLE "Titles" (
+    "emp_no" varchar   NOT NULL,
+    "title" varchar   NOT NULL,
+    "from_date" data   NOT NULL,
+    "to_date" date   NOT NULL
+);
+
+ALTER TABLE "employees" ADD CONSTRAINT "fk_employees_emp_no" FOREIGN KEY("emp_no")
+REFERENCES "dept_manager" ("emp_no");
+
+ALTER TABLE "departments" ADD CONSTRAINT "fk_departments_dept_no" FOREIGN KEY("dept_no")
+REFERENCES "dept_manager" ("dept_no");
+
+ALTER TABLE "dept_manager" ADD CONSTRAINT "fk_dept_manager_from_date_to_date" FOREIGN KEY("from_date", "to_date")
+REFERENCES "salaries" ("from_date", "to_date");
+
+ALTER TABLE "salaries" ADD CONSTRAINT "fk_salaries_salary" FOREIGN KEY("salary")
+REFERENCES "dept_manager" ("emp_no");
+
+ALTER TABLE "Titles" ADD CONSTRAINT "fk_Titles_emp_no" FOREIGN KEY("emp_no")
+REFERENCES "employees" ("emp_no");
+
+ALTER TABLE "Titles" ADD CONSTRAINT "fk_Titles_from_date_to_date" FOREIGN KEY("from_date", "to_date")
+REFERENCES "dept_manager" ("from_date", "to_date");
+
+SELECT employees.emp_no, employees.last_name, employees.first_name, employees.gender, salaries.salary
+FROM employees
+JOIN salaries
+ON employees.emp_no = salaries.emp_no;
+
+SELECT first_name, last_name, hire_date 
+FROM employees
+WHERE hire_date BETWEEN '1986-01-01' AND '1987-01-01';
+
+SELECT dept_emp.emp_no, employees.last_name, employees.first_name, departments.dept_name
+FROM dept_emp
+JOIN employees
+ON dept_emp.emp_no = employees.emp_no
+JOIN departments
+ON dept_emp.dept_no = departments.dept_no;
+
+SELECT first_name, last_name
+FROM employees
+WHERE first_name = 'Hercules'
+AND last_name LIKE 'B%';
+
+SELECT dept_emp.emp_no, employees.last_name, employees.first_name, departments.dept_name
+FROM dept_emp
+JOIN employees
+ON dept_emp.emp_no = employees.emp_no
+JOIN departments
+ON dept_emp.dept_no = departments.dept_no
+WHERE departments.dept_name = 'Sales';
+
+SELECT dept_emp.emp_no, employees.last_name, employees.first_name, departments.dept_name
+FROM dept_emp
+JOIN employees
+ON dept_emp.emp_no = employees.emp_no
+JOIN departments
+ON dept_emp.dept_no = departments.dept_no
+WHERE departments.dept_name = 'Sales' 
+OR departments.dept_name = 'Development';
+
+SELECT last_name,
+COUNT(last_name) AS "frequency"
+FROM employees
+GROUP BY last_name
+ORDER BY
+COUNT(last_name) DESC;
